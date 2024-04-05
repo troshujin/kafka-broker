@@ -4,7 +4,8 @@ from multiprocessing import Pipe, Process
 
 # from multiprocessing.connection import PipeConnection
 
-from .classes import ConsumerStorage, EventObject
+from .classes.consumer_storage import ConsumerStorage
+from .classes.event_object import EventObject
 
 
 def init_consumer(
@@ -109,8 +110,8 @@ def handle(logger: logging.Logger, msg):
     value = msg.value().decode("utf-8")
 
     logger.info(
-        "Consumed - topic {topic}: key = {key} value = {value}".format(
-            topic=topic, key=key, value=f"{value[:200]}..."
+        "Consumed - topic {topic}: key = {key} \n\tvalue = {value}".format(
+            topic=topic, key=key, value=f"{value}"
         )
     )
 

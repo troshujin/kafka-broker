@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class EventObject:
     def __init__(
         self,
+        *,
         correlation_id: int = None,
         event: str = None,
         data: dict[any] = None,
@@ -48,6 +49,13 @@ class EventObject:
         if not audit_log:
             audit_log = []
         self.audit_log = audit_log
+
+    def as_reply(self, message: str = "Internal Server Error", status_code: int = 500) -> None:
+        self.data = {
+            "message": message,
+            "status_code": status_code,
+            "payload": self.data
+        }
 
     def encode(self):
         result = {

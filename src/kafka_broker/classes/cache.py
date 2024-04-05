@@ -1,8 +1,12 @@
 from logging import Logger
 from uuid import UUID
 
-from .exceptions.cache import CouldNotEditMemcache, KeyNotFoundException
-from .classes import EventObject
+from ..exceptions.cache import (
+    ConnectionException,
+    CouldNotEditMemcache,
+    KeyNotFoundException,
+)
+from .event_object import EventObject
 from pymemcache.client.base import Client
 
 
@@ -22,12 +26,10 @@ class Cache:
         if client is not None:
             return client
         else:
-            raise ConnectionError
+            raise ConnectionException
 
     def add(self, event_object: EventObject):
-        res = self.client.add(
-            str(event_object.correlation_id), event_object.encode()
-        )
+        res = self.client.add(str(event_object.correlation_id), event_object.encode())
         if res is False:
             raise CouldNotEditMemcache
         self.logger.info(f"Added {str(event_object.correlation_id)} to cache.")
@@ -50,9 +52,7 @@ class Cache:
         return res
 
     def update(self, event_object: EventObject):
-        res = self.client.set(
-            str(event_object.correlation_id), event_object.encode()
-        )
+        res = self.client.set(str(event_object.correlation_id), event_object.encode())
         if res is False:
             raise CouldNotEditMemcache
         self.logger.info(f"Updated {str(event_object.correlation_id)} in cache.")
