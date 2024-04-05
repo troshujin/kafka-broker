@@ -75,7 +75,9 @@ class BrokerManager:
             self.consumer.subscribe([self.config["general"]["current_location"]])
         return consume(self.consumer, self.logger)
 
-    @deprecated("It says depricated, but it might still work. It will not be updated anymore.")
+    @deprecated(
+        "It says depricated, but it might still work. It will not be updated anymore."
+    )
     def init_consumer_app(self, app):
         """Setup the consumer on a FastAPI instance.
 
@@ -156,13 +158,8 @@ class BrokerManager:
         msg: str,
         data: Any = None,
     ):
-        data = self._format_data(data)
-
-        event_object.data = {
-            "status_code": status_code,
-            "message": msg,
-            "payload": data,
-        }
+        event_object.data = BrokerManager._format_data(data)
+        event_object.as_reply(message=msg, status_code=status_code)
 
         event_object.status = EventStatus.COMPLETED
         event_object.event = "respond"
@@ -177,7 +174,7 @@ class BrokerManager:
         data: Any = None,
         **kwargs,
     ):
-        data = self._format_data(data)
+        data = BrokerManager._format_data(data)
 
         event_object.event = event
         event_object.data = {"payload": data, **kwargs}

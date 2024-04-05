@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Callable
 from confluent_kafka import Producer
@@ -22,20 +21,12 @@ def produce(
     callback: Callable = default_callback,
 ):
     """Produce an event to the kafka message queue."""
-    logging.debug("just_some_spacing :D")
-    logging.debug("just_some_spacing :D")
-    logging.critical(f"start_instruction: {event_object.data.get('start_instruction')}, json: {json.dumps(event_object.data.get('start_instruction'))}, type: {type(event_object.data.get('start_instruction'))}")
-
     kafka_config = config["kafka.default"]
     kafka_config.update(config["kafka.producer"])
 
     producer = Producer(kafka_config)
     event_object.add_audit_log(config["general"]["current_location"])
     event_json = event_object.encode()
-
-    logging.debug("just_some_spacing :D")
-    logging.debug("just_some_spacing :D")
-    logging.critical(f"event_json: {event_json}")
 
     producer.produce(
         topic,
@@ -53,7 +44,7 @@ def produce(
         cache.add(event_object)
 
     logger.info(
-        "Produced - topic {topic}: key = {key} \n\tvalue = {value}".format(
+        "Produced - topic {topic}: key = {key} value = {value}".format(
             topic=topic,
             key=f"{str(event_object.correlation_id)}",
             value=f"{event_json}...",

@@ -110,7 +110,7 @@ def handle(logger: logging.Logger, msg):
     value = msg.value().decode("utf-8")
 
     logger.info(
-        "Consumed - topic {topic}: key = {key} \n\tvalue = {value}".format(
+        "Consumed - topic {topic}: key = {key} value = {value}".format(
             topic=topic, key=key, value=f"{value}"
         )
     )
