@@ -1,10 +1,16 @@
 import logging
 from typing import Self
+from pydantic import ValidationError
+
+from src.kafka_broker.exceptions.base import CustomException
+from src.kafka_broker.schemas.log import Log
 
 from ..enums import EventStatus
 from ..broker_manager import broker_manager
 from .event_object import EventObject
 
+logging_module = "LoggingModule"
+log_event = "log.create"
 
 class EventRouter:
     """A simple router.
@@ -44,11 +50,41 @@ class EventRouter:
             else:
                 logging.warning(f"Event '{event_object.event}' not found in '{self.name}'")
 
-        except Exception as exc:
-            self.exception_handler(exc, event_object)
+        except CustomException as exc:
+            self.exception_handler(exc, exc.level, exc.message, event_object)
 
-    def exception_handler(self, exc: Exception, event_object: EventObject):
+        except ValidationError as exc:
+            self.exception_handler(exc, 40, exc.title, event_object)
+
+        except Exception as exc:
+            self.exception_handler(exc, 50, "internal server error", event_object)
+
+    def exception_handler(self, exc: Exception, level: int, msg: str, event_object: EventObject):
         logging.exception(exc)
         event_object.as_reply()
         event_object.status = EventStatus.ERROR
         broker_manager.cache.update(event_object)
+
+        if broker_manager.config.get("general").get("current_location") != logging_module:
+            
+            job_id = event_object.data["payload"].get("job_id")
+            sequence = event_object.data["payload"].get("sequence")
+            if not sequence:
+                sequence = []
+            store = event_object.data["payload"].get("store")
+            if not store:
+                store = {}
+
+            log = Log(
+                correlation_id=event_object.correlation_id,
+                level=level,
+                message=msg,
+                module=logging_module,
+                status=EventStatus.ERROR,
+                job_id=job_id,
+                sequence=sequence,
+                store=store
+            )
+            event_object.event = log_event
+            event_object.data = log
+            broker_manager.produce(logging_module, event_object)
