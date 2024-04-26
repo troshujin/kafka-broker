@@ -2,8 +2,8 @@ import logging
 from typing import Self
 from pydantic import ValidationError
 
-from exceptions.base import CustomException
-from schemas.log import Log
+from kafka_broker.exceptions.base import CustomException
+from kafka_broker.schemas.log import Log
 
 from ..enums import EventStatus
 from ..broker_manager import broker_manager

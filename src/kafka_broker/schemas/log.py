@@ -2,7 +2,7 @@ from typing import Any
 import uuid
 from pydantic import BaseModel
 
-from src.kafka_broker.enums import EventStatus
+from kafka_broker.enums import EventStatus
 
 
 class Log(BaseModel):
