@@ -8,7 +8,7 @@ class EventObject:
     def __init__(
         self,
         *,
-        correlation_id: int = None,
+        correlation_id: uuid.UUID = None,
         event: str = None,
         data: dict[any] = None,
         status: str = None,
@@ -18,8 +18,8 @@ class EventObject:
 
         Parameters
         ----------
-        correlation_id : int
-            Event intentifier
+        correlation_id : uuid.UUID
+            Event identifier
 
         event : str
             Event action
