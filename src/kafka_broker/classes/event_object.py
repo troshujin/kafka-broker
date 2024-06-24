@@ -49,6 +49,10 @@ class EventObject:
         if not audit_log:
             audit_log = []
         self.audit_log = audit_log
+        self.last_update = int(datetime.datetime.now().timestamp())
+
+    def time_update(self) -> None:
+        self.last_update = int(datetime.datetime.now().timestamp())
 
     def as_reply(self, message: str = "Internal Server Error", status_code: int = 500) -> None:
         self.data = {

@@ -47,6 +47,6 @@ def produce(
         "Produced - topic {topic}: key = {key} value = {value}".format(
             topic=topic,
             key=f"{str(event_object.correlation_id)}",
-            value=f"{event_json}...",
+            value=f"{event_json}",
         )
     )

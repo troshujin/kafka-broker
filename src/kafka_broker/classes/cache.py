@@ -11,6 +11,7 @@ from pymemcache.client.base import Client
 
 
 class Cache:
+    client: Client
     def __init__(self, config, logger: Logger) -> None:
         self.client = self.innitialize_connection(config)
         self.config = config
@@ -52,6 +53,7 @@ class Cache:
         return res
 
     def update(self, event_object: EventObject):
+        event_object.time_update()
         res = self.client.set(str(event_object.correlation_id), event_object.encode())
         if res is False:
             raise CouldNotEditMemcache

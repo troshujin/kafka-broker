@@ -3,7 +3,7 @@ from typing import Self
 from pydantic import ValidationError
 
 from kafka_broker.exceptions.base import CustomException
-from kafka_broker.schemas.log import Log
+from kafka_broker.schemas.log import LogSchema
 
 from ..enums import EventStatus
 from ..broker_manager import broker_manager
@@ -57,7 +57,7 @@ class EventRouter:
             self.exception_handler(exc, 40, exc.title, event_object)
 
         except Exception as exc:
-            self.exception_handler(exc, 50, "internal server error", event_object)
+            self.exception_handler(exc, 50, f"internal server error: {str(exc)}", event_object)
 
     def exception_handler(self, exc: Exception, level: int, msg: str, event_object: EventObject):
         logging.exception(exc)
@@ -75,7 +75,7 @@ class EventRouter:
             if not store:
                 store = {}
 
-            log = Log(
+            log = LogSchema(
                 correlation_id=event_object.correlation_id,
                 level=level,
                 message=msg,

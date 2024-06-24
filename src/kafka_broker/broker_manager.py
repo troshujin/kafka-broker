@@ -164,6 +164,8 @@ class BrokerManager:
         event_object.status = EventStatus.COMPLETED
         event_object.event = "respond"
 
+        logging.info(f"Replied {event_object.correlation_id}")
+
         self.cache.update(event_object)
 
     def send(

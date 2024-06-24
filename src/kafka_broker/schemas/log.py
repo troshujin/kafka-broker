@@ -5,12 +5,12 @@ from pydantic import BaseModel
 from kafka_broker.enums import EventStatus
 
 
-class Log(BaseModel):
+class LogSchema(BaseModel):
+    job_id: uuid.UUID | None = None
     correlation_id: uuid.UUID
-    status: EventStatus
+    status: EventStatus = EventStatus.ONGOING
     level: int
     module: str
     message: str
-    store:  dict[str, Any] = {}
-    sequence: list[str] = []
-    job_id: int | None = None
+    store: dict[str, Any] | None = None
+    sequence: list[int] | None = None
