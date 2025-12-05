@@ -19,6 +19,7 @@ def produce(
     topic: str,
     event_object: EventObject,
     callback: Callable = default_callback,
+    skip_cache: bool = False,
 ):
     """Produce an event to the kafka message queue."""
     kafka_config = config["kafka.default"]
@@ -38,10 +39,11 @@ def produce(
     producer.poll(100)
     producer.flush()
     
-    try:
-        cache.update(event_object)
-    except KeyNotFoundException:
-        cache.add(event_object)
+    if skip_cache:
+        try:
+            cache.update(event_object)
+        except KeyNotFoundException:
+            cache.add(event_object)
 
     logger.info(
         "Produced - topic {topic}: key = {key} value = {value}".format(

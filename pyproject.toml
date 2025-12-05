@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kafka-broker"
-version = "0.4.5"
+version = "0.4.6"
 authors = [
-  { name="Tijmen Simons", email="tijmen.simons@student.hu.nl" },
+  { name="Tijmen Simons", email="tijmen.simons@gmail.com" },
   { name="Ivar Stek", email="ivar.stek@student.hu.nl" },
 ]
 description = "A python package implementation for the confluent kafka package. Managing producing and consuming."

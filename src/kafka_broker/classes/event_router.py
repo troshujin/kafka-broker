@@ -6,6 +6,7 @@ from kafka_broker.exceptions.base import CustomException
 from kafka_broker.schemas.log import LogSchema
 
 from ..enums import EventStatus
+from ..exceptions.cache import KeyNotFoundException
 from ..broker_manager import broker_manager
 from .event_object import EventObject
 
@@ -63,7 +64,11 @@ class EventRouter:
         logging.exception(exc)
         event_object.as_reply()
         event_object.status = EventStatus.ERROR
-        broker_manager.cache.update(event_object)
+        
+        try:
+            broker_manager.cache.update(event_object)
+        except KeyNotFoundException:
+            broker_manager.cache.add(event_object)
 
         if broker_manager.config.get("general").get("current_location") != logging_module:
             

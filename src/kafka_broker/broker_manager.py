@@ -39,6 +39,7 @@ class BrokerManager:
         topic: str,
         event_object: EventObject | Any,
         callback: Callable = default_callback,
+        skip_cache: bool = False,
     ):
         """Send a message to the broker.
 
@@ -65,7 +66,7 @@ class BrokerManager:
         encode it. If provided in the config, the custom encode function
         must return a key and value pair in the form of a tuple.
         """
-        produce(self.config, self.cache, self.logger, topic, event_object, callback)
+        produce(self.config, self.cache, self.logger, topic, event_object, callback, skip_cache=skip_cache)
 
     def consume(self) -> EventObject | None:
         if not self.consumer:
@@ -158,6 +159,15 @@ class BrokerManager:
         msg: str,
         data: Any = None,
     ):
+        """Reply to a call and update it in the cache.
+        
+        This does NOT produce a new message to the broker, it only updates
+        the existing message in the cache.
+
+        Useful for acknowledging messages / small calls.
+
+        Originally designed for WEB-API request.
+        """
         event_object.data = BrokerManager._format_data(data)
         event_object.as_reply(message=msg, status_code=status_code)
 
@@ -174,6 +184,7 @@ class BrokerManager:
         module: str,
         event: str,
         data: Any = None,
+        skip_cache: bool = False,
         **kwargs,
     ):
         data = BrokerManager._format_data(data)
@@ -181,7 +192,7 @@ class BrokerManager:
         event_object.event = event
         event_object.data = {"payload": data, **kwargs}
 
-        self.produce(module, event_object)
+        self.produce(module, event_object, skip_cache=skip_cache)
 
 
 broker_manager = BrokerManager()
