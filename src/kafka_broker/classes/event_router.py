@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import logging
 from typing import Self
 from pydantic import ValidationError
@@ -18,9 +19,14 @@ class EventRouter:
     Bind events to expose them to the router.
     Bind routers to expand the router.
     """
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, custom_exception_handler: Callable = None) -> None:
         self.name = name
         self.binds = {}
+
+        if custom_exception_handler:
+            self.exception_handler = custom_exception_handler
+        else:
+            self.exception_handler = self.default_exception_handler
 
     def check_bind(self, name):
         if self.binds.get(name) is not None:            
@@ -60,7 +66,7 @@ class EventRouter:
         except Exception as exc:
             self.exception_handler(exc, 50, f"internal server error: {str(exc)}", event_object)
 
-    def exception_handler(self, exc: Exception, level: int, msg: str, event_object: EventObject):
+    def default_exception_handler(self, exc: Exception, level: int, msg: str, event_object: EventObject):
         logging.exception(exc)
         event_object.as_reply()
         event_object.status = EventStatus.ERROR
